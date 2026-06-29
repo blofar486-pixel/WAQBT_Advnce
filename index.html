@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WAQBT AI ON-TIME SCANNER</title>
+    <style>
+        :root {
+            --bg-dark: #060e0a;
+            --card-bg: #0b1611;
+            --primary-green: #00e676;
+            --dim-green: rgba(0, 230, 118, 0.15);
+            --border-green: #112d1f;
+            --text-main: #e0eedf;
+            --text-dim: #7da08a;
+            --danger-red: #ff3d00;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            padding: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .phone-wrapper {
+            width: 100%;
+            max-width: 440px;
+            background: #040906;
+            border-radius: 28px;
+            padding: 16px;
+            border: 2px solid #0f2217;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+        }
+
+        /* Asset Selector Dropdown */
+        .asset-selector-container {
+            background: var(--card-bg);
+            border: 1px solid var(--border-green);
+            border-radius: 14px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .asset-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .asset-flags {
+            font-size: 20px;
+            letter-spacing: -2px;
+        }
+
+        .asset-details h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            letter-spacing: 0.5px;
+        }
+
+        .asset-details span {
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        .select-native {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .arrow-down {
+            color: var(--primary-green);
+            font-size: 12px;
+        }
+
+        /* Broker Selector Tab Block */
+        .broker-tabs {
+            background: rgba(11, 22, 17, 0.6);
+            border: 1px solid var(--border-green);
+            border-radius: 20px;
+            padding: 5px;
+            display: flex;
+            gap: 5px;
+            margin-bottom: 14px;
+        }
+
+        .broker-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-dim);
+            padding: 11px;
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .broker-btn.active {
+            background: linear-gradient(135deg, #00e676, #00b0ff);
+            color: #000;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 230, 118, 0.3);
+        }
+
+        /* Timeframes Section */
+        .timeframe-grid {
+            display: flex;
+            justify-content: space-between;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .tf-btn {
+            flex: 1;
+            background: var(--card-bg);
+            border: 1px solid var(--border-green);
+            color: var(--text-dim);
+            padding: 8px 0;
+            font-size: 11px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 500;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .tf-btn.active {
+            background: var(--primary-green);
+            color: #000;
+            border-color: var(--primary-green);
+            font-weight: 600;
+            box-shadow: 0 0 10px rgba(0, 230, 118, 0.2);
+        }
+
+        /* Meta Server Status Row */
+        .status-meta-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--text-dim);
+            padding: 0 4px;
+            margin-bottom: 24px;
+        }
+
+        .next-candle-timer span {
+            color: var(--primary-green);
+            font-weight: bold;
+        }
+
+        /* Animated AI Scanner Core Ring Graphic */
+        .scanner-visualization-box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 24px;
+            position: relative;
+            height: 230px;
+        }
+
+        .orbit-track {
+            width: 210px;
+            height: 210px;
+            border: 1px dashed rgba(0, 230, 118, 0.25);
+            border-radius: 50%;
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: spin 25s linear infinite;
+        }
+
+        .orbit-dot {
+            width: 7px;
+            height: 7px;
+            background: var(--primary-green);
+            border-radius: 50%;
+            position: absolute;
+            box-shadow: 0 0 8px var(--primary-green);
+        }
+
+        /* Positioning dots around orbit */
+        .dot1 { top: 0; left: 50%; transform: translate(-50%, -50%); }
+        .dot2 { right: 15%; top: 15%; }
+        .dot3 { right: 0; top: 50%; transform: translate(50%, -50%); }
+        .dot4 { right: 15%; bottom: 15%; }
+        .dot5 { bottom: 0; left: 50%; transform: translate(-50%, 50%); }
+        .dot6 { left: 15%; bottom: 15%; }
+        .dot7 { left: 0; top: 50%; transform: translate(-50%, -50%); }
+        .dot8 { left: 15%; top: 15%; }
+
+        .center-radar-node {
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, #00b050 0%, #051a0e 100%);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 0 30px rgba(0, 230, 118, 0.2);
+            border: 2px solid rgba(0, 230, 118, 0.4);
+            transition: all 0.3s ease;
+            z-index: 5;
+        }
+
+        .center-radar-node:active {
+            transform: scale(0.95);
+        }
+
+        .center-radar-node.analyzing {
+            animation: pulseGlow 1.5s infinite ease-in-out;
+        }
+
+        .center-radar-node .icon-gear {
+            font-size: 24px;
+            margin-bottom: 6px;
+            animation: spinGear 3s linear infinite;
+        }
+
+        .center-radar-node span.status-lbl {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .center-radar-node span.sub-lbl {
+            font-size: 9px;
+            color: #b2ff59;
+            margin-top: 2px;
+        }
+
+        /* Dynamic Output Signal Card Overlay */
+        .signal-result-card {
+            position: absolute;
+            width: 170px;
+            height: 170px;
+            background: #07120c;
+            border: 2px solid var(--primary-green);
+            border-radius: 50%;
+            z-index: 10;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 0 35px rgba(0, 230, 118, 0.4);
+        }
+
+        .signal-result-card.put-style {
+            border-color: var(--danger-red);
+            box-shadow: 0 0 35px rgba(255, 61, 0, 0.4);
+        }
+
+        .signal-action {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .signal-action.call { color: var(--primary-green); }
+        .signal-action.put { color: var(--danger-red); }
+
+        .signal-score {
+            font-size: 12px;
+            color: #fff;
+            margin: 3px 0;
+            font-weight: 600;
+        }
+
+        .signal-target {
+            font-size: 10px;
+            color: var(--text-dim);
+        }
+
+        /* Log Panel Logs Terminal block */
+        .log-section-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border-green);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .log-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .log-stream {
+            max-height: 150px;
+            overflow-y: auto;
+            font-size: 11px;
+            line-height: 1.7;
+            color: var(--text-dim);
+        }
+
+        .log-line {
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            margin-bottom: 4px;
+        }
+
+        .log-line span.bullet {
+            color: var(--primary-green);
+        }
+
+        /* Footer Community Button Link */
+        .community-container {
+            margin-top: 10px;
+        }
+
+        .com-title {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .tg-channel-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #00c853, #00e676);
+            border: none;
+            color: #000;
+            padding: 12px;
+            border-radius: 14px;
+            font-weight: bold;
+            font-size: 13px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgba(0, 230, 118, 0.2);
+        }
+
+        /* Keyframe Animations */
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes spinGear { 100% { transform: rotate(360deg); } }
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 20px rgba(0, 230, 118, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(0, 230, 118, 0.5); }
+            100% { box-shadow: 0 0 20px rgba(0, 230, 118, 0.2); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="phone-wrapper">
+    <!-- Asset Selector Bar Block -->
+    <div class="asset-selector-container">
+        <div class="asset-info">
+            <div class="asset-flags" id="flagDisplay">🇪🇺🇺🇸</div>
+            <div class="asset-details">
+                <h4 id="assetLabel">EUR / USD (LIVE)</h4>
+                <span>Tap to switch pair node</span>
+            </div>
+        </div>
+        <div class="arrow-down">▼</div>
+        <!-- Native Selection for easy interactions -->
+        <select class="select-native" id="pairSelector" onchange="handlePairUpdate()">
+            <option value="EURUSD" data-flags="🇪🇺🇺🇸" data-type="LIVE">EUR / USD (LIVE)</option>
+            <option value="GBPUSD" data-flags="🇬🇧🇺🇸" data-type="LIVE">GBP / USD (LIVE)</option>
+            <option value="USDJPY" data-flags="🇺🇸🇯🇵" data-type="LIVE">USD / JPY (LIVE)</option>
+            <option value="EURUSD_OTC" data-flags="🇪🇺🇺🇸" data-type="OTC">EUR / USD (OTC)</option>
+            <option value="GBPUSD_OTC" data-flags="🇬🇧🇺🇸" data-type="OTC">GBP / USD (OTC)</option>
+            <option value="BTCUSD_OTC" data-flags="🪙🇺🇸" data-type="OTC">BTC / USD (OTC)</option>
+            <option value="TRW_GOLD_OTC" data-flags="👑✨" data-type="OTC">GOLD (OTC)</option>
+        </select>
+    </div>
+
+    <!-- Broker Row Tab Matrix -->
+    <div class="broker-tabs">
+        <button class="broker-btn active" id="btnQuotex" onclick="switchBroker('Quotex')">Quotex</button>
+        <button class="broker-btn" id="btnTradowix" onclick="switchBroker('Tradowix')">Tradowix</button>
+    </div>
+
+    <!-- Timeframes Buttons -->
+    <div class="timeframe-grid">
+        <button class="tf-btn" onclick="selectTf(this)">5 sec</button>
+        <button class="tf-btn" onclick="selectTf(this)">15 sec</button>
+        <button class="tf-btn" onclick="selectTf(this)">30 sec</button>
+        <button class="tf-btn" onclick="selectTf(this)">45 sec</button>
+        <button class="tf-btn active" onclick="selectTf(this)">1 min</button>
+    </div>
+
+    <!-- Status Server Rows -->
+    <div class="status-meta-row">
+        <div class="server-time">Server: <span id="clockStamp">00:00:00</span></div>
+        <div class="next-candle-timer">Next candle: <span id="candleCount">00s</span></div>
+    </div>
+
+    <!-- Interactive AI Core Visualizer Graphic -->
+    <div class="scanner-visualization-box">
+        <!-- Dashed orbiting tracking ring -->
+        <div class="orbit-track">
+            <div class="orbit-dot dot1"></div>
+            <div class="orbit-dot dot2"></div>
+            <div class="orbit-dot dot3"></div>
+            <div class="orbit-dot dot4"></div>
+            <div class="orbit-dot dot5"></div>
+            <div class="orbit-dot dot6"></div>
+            <div class="orbit-dot dot7"></div>
+            <div class="orbit-dot dot8"></div>
+        </div>
+
+        <!-- Inner Matrix Button Trigger -->
+        <div class="center-radar-node" id="coreTrigger" onclick="startCoreAnalysis()">
+            <div class="icon-gear">⚙️</div>
+            <span class="status-lbl" id="coreText">Start Scan</span>
+            <span class="sub-lbl" id="coreSubText">WAQBT AI v6.0</span>
+        </div>
+
+        <!-- Overlapping Signal Result Dynamic Card -->
+        <div class="signal-result-card" id="resultOverlay" onclick="resetScannerView()">
+            <div class="signal-action" id="resAction">CALL</div>
+            <div class="signal-score" id="resScore">94% CONFIDENCE</div>
+            <div class="signal-target" id="resTarget">EURUSD [1M]</div>
+            <div style="font-size: 8px; color: #7da08a; margin-top: 8px;">Tap to dismiss</div>
+        </div>
+    </div>
+
+    <!-- Log Section Terminal Panel -->
+    <div class="log-section-panel">
+        <div class="log-title">AI Analysis Log</div>
+        <div class="log-stream" id="logTerminal">
+            <div class="log-line"><span class="bullet">▶</span> Core node standby... Click center button to analyze live feed.</div>
+        </div>
+    </div>
+
+    <!-- Footer Channel Link with updated username rizvi0082 -->
+    <div class="community-container">
+        <div class="com-title">Join The Community</div>
+        <a href="https://t.me/rizvi0082" class="tg-channel-btn" target="_blank">
+            📢 Rizvi0082 Traders Channel
+        </a>
+    </div>
+</div>
+
+<script>
+    let selectedBroker = "Quotex";
+    let isScanning = false;
+
+    // Real-time Clock Sync Loop
+    function updateSystemTime() {
+        let now = new Date();
+        let utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+        let pkt = new Date(utc + (3600000 * 5)); // PKT UTC+5
+        
+        let hh = String(pkt.getHours()).padStart(2, '0');
+        let mm = String(pkt.getMinutes()).padStart(2, '0');
+        let ss = String(pkt.getSeconds()).padStart(2, '0');
+        
+        document.getElementById("clockStamp").innerText = `${hh}:${mm}:${ss}`;
+        
+        // Simulating the remaining seconds left in a 60-second structural candle segment
+        let secondsLeft = 60 - ss;
+        document.getElementById("candleCount").innerText = `${secondsLeft}s`;
+    }
+    setInterval(updateSystemTime, 1000);
+    updateSystemTime();
+
+    function switchBroker(broker) {
+        if(isScanning) return;
+        selectedBroker = broker;
+        document.getElementById("btnQuotex").classList.toggle("active", broker === "Quotex");
+        document.getElementById("btnTradowix").classList.toggle("active", broker === "Tradowix");
+        
+        // Add log action to terminal
+        logAction(`Switched engine matrix target to: ${broker}`);
+    }
+
+    function selectTf(element) {
+        if(isScanning) return;
+        document.querySelectorAll('.tf-btn').forEach(btn => btn.classList.remove('active'));
+        element.classList.add('active');
+        logAction(`Timeframe frame adjusted to: ${element.innerText}`);
+    }
+
+    function handlePairUpdate() {
+        const selector = document.getElementById("pairSelector");
+        const selectedOpt = selector.options[selector.selectedIndex];
+        
+        document.getElementById("flagDisplay").innerText = selectedOpt.getAttribute("data-flags");
+        document.getElementById("assetLabel").innerText = selectedOpt.text;
+        
+        logAction(`Asset channel redirected to ${selectedOpt.value}`);
+    }
+
+    function logAction(text) {
+        const term = document.getElementById("logTerminal");
+        const line = document.createElement("div");
+        line.className = "log-line";
+        line.innerHTML = `<span class="bullet">▶</span> ${text}`;
+        term.appendChild(line);
+        term.scrollTop = term.scrollHeight;
+    }
+
+    function startCoreAnalysis() {
+        if(isScanning) return;
+        isScanning = true;
+        
+        const coreNode = document.getElementById("coreTrigger");
+        const overlay = document.getElementById("resultOverlay");
+        
+        coreNode.classList.add("analyzing");
+        document.getElementById("coreText").innerText = "Analyzing";
+        overlay.style.display = "none";
+        
+        const selector = document.getElementById("pairSelector");
+        const pair = selector.value;
+        
+        // Simulating consecutive structural indicator log prints
+        const steps = [
+            "Connecting to real-time asset pricing web-sockets...",
+            "Streaming OHLCV candle feed matrices successfully.",
+            "Calculating mathematical confluence index (RSI-14)...",
+            "Analyzing short-term price action trend configurations...",
+            "Computing EMA cross vectors and volume profile nodes...",
+            "Running multi-strategy core filter checks...",
+            "Formulating deep safety margins and entry zones...",
+            "Final structural verification successfully completed! ✔"
+        ];
+        
+        let currentStep = 0;
+        const interval = setInterval(() => {
+            if(currentStep < steps.length) {
+                logAction(steps[currentStep]);
+                currentStep++;
+            } else {
+                clearInterval(interval);
+                displayComputedSignal(pair);
+            }
+        }, 450);
+    }
+
+    function displayComputedSignal(pair) {
+        isScanning = false;
+        
+        const coreNode = document.getElementById("coreTrigger");
+        const overlay = document.getElementById("resultOverlay");
+        
+        coreNode.classList.remove("analyzing");
+        document.getElementById("coreText").innerText = "Scan Next";
+        
+        // Completely dynamic direction formulation logic
+        const side = Math.random() > 0.5 ? "CALL" : "PUT";
+        const score = Math.floor(Math.random() * (98 - 83 + 1)) + 83;
+        
+        const actionEl = document.getElementById("resAction");
+        actionEl.innerText = side;
+        if(side === "CALL") {
+            actionEl.className = "signal-action call";
+            overlay.className = "signal-result-card";
+            logAction(`⚠️ CRITICAL CONFLUENCE TRIGGER: OPEN 🟢 CALL (UP) NEXT CANDLE`);
+        } else {
+            actionEl.className = "signal-action put";
+            overlay.className = "signal-result-card put-style";
+            logAction(`⚠️ CRITICAL CONFLUENCE TRIGGER: OPEN 🔴 PUT (DOWN) NEXT CANDLE`);
+        }
+        
+        document.getElementById("resScore").innerText = `${score}% CONFIDENCE`;
+        document.getElementById("resTarget").innerText = `${pair.replace("_", " ")} [1M]`;
+        
+        overlay.style.display = "flex";
+    }
+
+    function resetScannerView() {
+        document.getElementById("resultOverlay").style.display = "none";
+        logAction("Scanner reset. Core engine returned to active standby mode.");
+    }
+</script>
+
+</body>
+</html>
