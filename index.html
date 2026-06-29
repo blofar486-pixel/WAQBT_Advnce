@@ -54,7 +54,6 @@
             align-items: center;
             justify-content: space-between;
             margin-bottom: 14px;
-            cursor: pointer;
             position: relative;
         }
 
@@ -392,15 +391,38 @@
             </div>
         </div>
         <div class="arrow-down">▼</div>
-        <!-- Native Selection for easy interactions -->
         <select class="select-native" id="pairSelector" onchange="handlePairUpdate()">
-            <option value="EURUSD" data-flags="🇪🇺🇺🇸" data-type="LIVE">EUR / USD (LIVE)</option>
-            <option value="GBPUSD" data-flags="🇬🇧🇺🇸" data-type="LIVE">GBP / USD (LIVE)</option>
-            <option value="USDJPY" data-flags="🇺🇸🇯🇵" data-type="LIVE">USD / JPY (LIVE)</option>
-            <option value="EURUSD_OTC" data-flags="🇪🇺🇺🇸" data-type="OTC">EUR / USD (OTC)</option>
-            <option value="GBPUSD_OTC" data-flags="🇬🇧🇺🇸" data-type="OTC">GBP / USD (OTC)</option>
-            <option value="BTCUSD_OTC" data-flags="🪙🇺🇸" data-type="OTC">BTC / USD (OTC)</option>
-            <option value="TRW_GOLD_OTC" data-flags="👑✨" data-type="OTC">GOLD (OTC)</option>
+            <!-- === LIVE PAIRS === -->
+            <optgroup label="LIVE FOREX & CRYPTO">
+                <option value="EURUSD" data-flags="🇪🇺🇺🇸">EUR / USD (LIVE)</option>
+                <option value="GBPUSD" data-flags="🇬🇧🇺🇸">GBP / USD (LIVE)</option>
+                <option value="USDJPY" data-flags="🇺🇸🇯🇵">USD / JPY (LIVE)</option>
+                <option value="AUDUSD" data-flags="🇦🇺🇺🇸">AUD / USD (LIVE)</option>
+                <option value="USDCAD" data-flags="🇺🇸🇨🇦">USD / CAD (LIVE)</option>
+                <option value="EURGBP" data-flags="🇪🇺🇬🇧">EUR / GBP (LIVE)</option>
+                <option value="EURJPY" data-flags="🇪🇺🇯🇵">EUR / JPY (LIVE)</option>
+                <option value="GBPJPY" data-flags="🇬🇧🇯🇵">GBP / JPY (LIVE)</option>
+                <option value="AUDJPY" data-flags="🇦🇺🇯🇵">AUD / JPY (LIVE)</option>
+                <option value="BTCUSD" data-flags="🪙🇺🇸">BTC / USD (LIVE)</option>
+                <option value="ETHUSD" data-flags="🔷🇺🇸">ETH / USD (LIVE)</option>
+            </optgroup>
+            
+            <!-- === OTC PAIRS === -->
+            <optgroup label="OTC PAIRS">
+                <option value="EURUSD_OTC" data-flags="🇪🇺🇺🇸">EUR / USD (OTC)</option>
+                <option value="GBPUSD_OTC" data-flags="🇬🇧🇺🇸">GBP / USD (OTC)</option>
+                <option value="USDJPY_OTC" data-flags="🇺🇸🇯🇵">USD / JPY (OTC)</option>
+                <option value="AUDUSD_OTC" data-flags="🇦🇺🇺🇸">AUD / USD (OTC)</option>
+                <option value="USDCAD_OTC" data-flags="🇺🇸🇨🇦">USD / CAD (OTC)</option>
+                <option value="EURGBP_OTC" data-flags="🇪🇺🇬🇧">EUR / GBP (OTC)</option>
+                <option value="EURJPY_OTC" data-flags="🇪🇺🇯🇵">EUR / JPY (OTC)</option>
+                <option value="GBPJPY_OTC" data-flags="🇬🇧🇯🇵">GBP / JPY (OTC)</option>
+                <option value="NZDUSD_OTC" data-flags="🇳🇿🇺🇸">NZD / USD (OTC)</option>
+                <option value="CHFJPY_OTC" data-flags="🇨🇭🇯🇵">CHF / JPY (OTC)</option>
+                <option value="BTCUSD_OTC" data-flags="🪙🇺🇸">BTC / USD (OTC)</option>
+                <option value="TRW_GOLD_OTC" data-flags="👑✨">GOLD (OTC)</option>
+                <option value="SILVER_OTC" data-flags="🪙✨">SILVER (OTC)</option>
+            </optgroup>
         </select>
     </div>
 
@@ -427,7 +449,6 @@
 
     <!-- Interactive AI Core Visualizer Graphic -->
     <div class="scanner-visualization-box">
-        <!-- Dashed orbiting tracking ring -->
         <div class="orbit-track">
             <div class="orbit-dot dot1"></div>
             <div class="orbit-dot dot2"></div>
@@ -439,14 +460,12 @@
             <div class="orbit-dot dot8"></div>
         </div>
 
-        <!-- Inner Matrix Button Trigger -->
         <div class="center-radar-node" id="coreTrigger" onclick="startCoreAnalysis()">
             <div class="icon-gear">⚙️</div>
             <span class="status-lbl" id="coreText">Start Scan</span>
             <span class="sub-lbl" id="coreSubText">WAQBT AI v6.0</span>
         </div>
 
-        <!-- Overlapping Signal Result Dynamic Card -->
         <div class="signal-result-card" id="resultOverlay" onclick="resetScannerView()">
             <div class="signal-action" id="resAction">CALL</div>
             <div class="signal-score" id="resScore">94% CONFIDENCE</div>
@@ -463,11 +482,11 @@
         </div>
     </div>
 
-    <!-- Footer Channel Link with updated username rizvi0082 -->
+    <!-- Footer Channel Link (Username Hidden from UI Text) -->
     <div class="community-container">
         <div class="com-title">Join The Community</div>
         <a href="https://t.me/rizvi0082" class="tg-channel-btn" target="_blank">
-            📢 Rizvi0082 Traders Channel
+            📢 Join Our VIP Telegram Channel
         </a>
     </div>
 </div>
@@ -476,7 +495,6 @@
     let selectedBroker = "Quotex";
     let isScanning = false;
 
-    // Real-time Clock Sync Loop
     function updateSystemTime() {
         let now = new Date();
         let utc = now.getTime() + (now.getTimezoneOffset() * 60000);
@@ -488,7 +506,6 @@
         
         document.getElementById("clockStamp").innerText = `${hh}:${mm}:${ss}`;
         
-        // Simulating the remaining seconds left in a 60-second structural candle segment
         let secondsLeft = 60 - ss;
         document.getElementById("candleCount").innerText = `${secondsLeft}s`;
     }
@@ -500,8 +517,6 @@
         selectedBroker = broker;
         document.getElementById("btnQuotex").classList.toggle("active", broker === "Quotex");
         document.getElementById("btnTradowix").classList.toggle("active", broker === "Tradowix");
-        
-        // Add log action to terminal
         logAction(`Switched engine matrix target to: ${broker}`);
     }
 
@@ -545,7 +560,6 @@
         const selector = document.getElementById("pairSelector");
         const pair = selector.value;
         
-        // Simulating consecutive structural indicator log prints
         const steps = [
             "Connecting to real-time asset pricing web-sockets...",
             "Streaming OHLCV candle feed matrices successfully.",
@@ -578,7 +592,6 @@
         coreNode.classList.remove("analyzing");
         document.getElementById("coreText").innerText = "Scan Next";
         
-        // Completely dynamic direction formulation logic
         const side = Math.random() > 0.5 ? "CALL" : "PUT";
         const score = Math.floor(Math.random() * (98 - 83 + 1)) + 83;
         
