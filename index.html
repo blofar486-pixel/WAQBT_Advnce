@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WAQBT AI QUANTUM ENGINE - STEALTH PRO</title>
+    <title>WAQBT AI QUANTUM ENGINE - LIVE TICKER</title>
     <style>
         :root {
             --bg-dark: #030706;
@@ -14,6 +14,7 @@
             --text-main: #e2f0e7;
             --text-dim: #6d8a78;
             --danger-red: #ff3333;
+            --neon-red-glow: rgba(255, 51, 51, 0.2);
         }
 
         * {
@@ -26,7 +27,7 @@
         body {
             background-color: var(--bg-dark);
             color: var(--text-main);
-            padding: 20px 15px;
+            padding: 15px;
             display: flex;
             justify-content: center;
             align-items: flex-start;
@@ -42,6 +43,57 @@
             border: 2px solid var(--border-green);
             box-shadow: 0 20px 50px rgba(0,0,0,0.9), inset 0 0 15px rgba(0, 255, 136, 0.05);
             position: relative;
+            overflow: hidden;
+        }
+
+        /* Live Market Price News Feed Ticker */
+        .live-news-ticker {
+            background: rgba(2, 6, 4, 0.9);
+            border: 1px solid var(--border-green);
+            border-radius: 12px;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: inset 0 0 10px rgba(0, 255, 136, 0.03);
+        }
+
+        .ticker-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+        }
+
+        .ticker-price-block {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .live-price-feed {
+            font-family: monospace;
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--text-main);
+            transition: color 0.2s ease;
+        }
+
+        .live-price-feed.price-up {
+            color: var(--primary-green);
+            text-shadow: 0 0 8px var(--neon-glow);
+        }
+
+        .live-price-feed.price-down {
+            color: var(--danger-red);
+            text-shadow: 0 0 8px var(--neon-red-glow);
+        }
+
+        .price-indicator-icon {
+            font-size: 12px;
+            font-weight: bold;
         }
 
         .panel-header {
@@ -57,7 +109,6 @@
             text-shadow: 0 0 10px var(--neon-glow);
         }
 
-        /* Full Asset Dropdown Selector */
         .asset-box {
             background: var(--card-bg);
             border: 1px solid var(--border-green);
@@ -81,7 +132,6 @@
         .asset-details span { font-size: 11px; color: var(--text-dim); }
         .select-native { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 2; }
 
-        /* Configuration Input Row */
         .config-card {
             background: var(--card-bg);
             border: 1px solid var(--border-green);
@@ -111,7 +161,6 @@
             box-shadow: inset 0 0 5px rgba(0,255,136,0.1);
         }
 
-        /* Telemetry Row */
         .meta-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -134,7 +183,6 @@
         }
         .stream-status { color: var(--primary-green) !important; text-shadow: 0 0 5px var(--neon-glow); }
 
-        /* Glowing Green Circle Button Container */
         .btn-container {
             display: flex;
             justify-content: center;
@@ -166,16 +214,13 @@
             transform: scale(1.05);
             box-shadow: 0 0 35px rgba(0, 255, 136, 0.6);
         }
-        .circle-gen-btn:active {
-            transform: scale(0.95);
-        }
+        .circle-gen-btn:active { transform: scale(0.95); }
         .circle-gen-btn:disabled {
             background: #112218;
             color: var(--text-dim);
             box-shadow: none;
             cursor: not-allowed;
         }
-
         .circle-gen-btn span {
             font-size: 9px;
             display: block;
@@ -183,7 +228,6 @@
             opacity: 0.8;
         }
 
-        /* Output Box Layout */
         .output-box-container {
             background: #020403;
             border: 2px solid var(--border-green);
@@ -194,7 +238,7 @@
 
         .output-textarea {
             width: 100%;
-            height: 260px;
+            height: 240px;
             background: transparent;
             border: none;
             color: #adff2f;
@@ -229,11 +273,18 @@
 <body>
 
 <div class="phone-wrapper">
+    <div class="live-news-ticker">
+        <span class="ticker-label" id="tickerAsset">FEED: EURUSD</span>
+        <div class="ticker-price-block">
+            <span class="live-price-feed" id="tickerPrice">0.00000</span>
+            <span class="price-indicator-icon" id="tickerIcon">●</span>
+        </div>
+    </div>
+
     <div class="panel-header">
         <h3>⚡ WAQBT QUANTUM ENGINE ⚡</h3>
     </div>
 
-    <!-- Complete Real-Time Asset Selector -->
     <div class="asset-box">
         <div class="asset-info">
             <div class="asset-flags" id="flagDisplay">🇪🇺🇺🇸</div>
@@ -271,19 +322,16 @@
         </select>
     </div>
 
-    <!-- Volume Inputs Box Nodes -->
     <div class="config-card">
         <label for="tradeCount">Target Trades Volume:</label>
         <input type="number" id="tradeCount" class="signals-count-input" value="10" min="1" max="40">
     </div>
 
-    <!-- Live Network Feed Sync Telemetry -->
     <div class="meta-row">
         <div class="meta-tile">Network Feed:<span class="stream-status" id="netStatus">Syncing...</span></div>
         <div class="meta-tile">Terminal Clock:<span id="clockStamp">00:00:00</span></div>
     </div>
 
-    <!-- Center Placed Green Circle Glowing Button -->
     <div class="btn-container">
         <button class="circle-gen-btn" id="genBtn" onclick="generateSecureSignals()">
             Compile
@@ -291,7 +339,6 @@
         </button>
     </div>
 
-    <!-- Safe Output Block View Area -->
     <div class="output-box-container">
         <textarea class="output-textarea" id="outputArea" readonly>Awaiting strategy analysis compilation signal...</textarea>
         <button class="copy-btn" onclick="copyScheduleText()">📋 COPY COMPILED SCHEDULE TEXT</button>
@@ -299,15 +346,13 @@
 </div>
 
 <script>
-    // ===================================================
-    // 🔐 LIVE CONNECTION INFRASTRUCTURE
     const DERIV_API_TOKEN = "Pat_b2ebf69f268d7928f8871a37f1ff6d6011064332336ca1a9108c5591f6c43c2b";
     const APP_ID = "1089";
-    // ===================================================
 
     let ws;
     let currentSelectedPairText = "EURUSD";
     let liveTicksArray = [];
+    let lastRenderedPrice = 0;
 
     function initDerivNetwork() {
         ws = new WebSocket(`wss://ws.derivws.com/websockets/v3?app_id=${APP_ID}`);
@@ -326,11 +371,16 @@
             }
             if(data.msg_type === 'tick') {
                 let tick = data.tick;
-                liveTicksArray.push(Number(tick.quote));
+                let currentPrice = Number(tick.quote);
+                
+                liveTicksArray.push(currentPrice);
                 if(liveTicksArray.length > 40) liveTicksArray.shift();
 
                 let date = new Date(tick.epoch * 1000);
                 document.getElementById("clockStamp").innerText = date.toTimeString().split(' ')[0];
+
+                // Update Live Ticker Feed Fluctuation
+                updateLiveNewsTicker(currentPrice);
             }
         };
 
@@ -346,8 +396,12 @@
             ws.send(JSON.stringify({ forget_all: "ticks" }));
             let symbolCode = document.getElementById("pairSelector").value;
             let apiSymbol = (symbolCode.startsWith("R_")) ? symbolCode : "frx" + symbolCode;
+            
+            document.getElementById("tickerAsset").innerText = "FEED: " + symbolCode.toUpperCase();
+            
             ws.send(JSON.stringify({ ticks: apiSymbol }));
             liveTicksArray = [];
+            lastRenderedPrice = 0;
         }
     }
 
@@ -360,7 +414,28 @@
         subscribeToTicks();
     }
 
-    // STEALTH BACKGROUND PROCESSING (Filters are 100% processing privately inside)
+    function updateLiveNewsTicker(price) {
+        const priceDisplay = document.getElementById("tickerPrice");
+        const iconDisplay = document.getElementById("tickerIcon");
+        
+        // Formatting decimals based on Asset type (Forex pairs vs Volatility Indices)
+        let decimalCount = currentSelectedPairText.startsWith("R_") ? 2 : 5;
+        priceDisplay.innerText = price.toFixed(decimalCount);
+
+        if (lastRenderedPrice > 0) {
+            if (price > lastRenderedPrice) {
+                priceDisplay.className = "live-price-feed price-up";
+                iconDisplay.innerText = "▲";
+                iconDisplay.style.color = "var(--primary-green)";
+            } else if (price < lastRenderedPrice) {
+                priceDisplay.className = "live-price-feed price-down";
+                iconDisplay.innerText = "▼";
+                iconDisplay.style.color = "var(--danger-red)";
+            }
+        }
+        lastRenderedPrice = price;
+    }
+
     function generateSecureSignals() {
         if(liveTicksArray.length < 5) {
             alert("Streaming engine buffer matrix syncing. Please wait 3 seconds.");
@@ -387,18 +462,15 @@
 
             let signalsText = `🎇${dateStr}\n\n📈 WAQBT Traders\n\n🏦 Broker: Quotex\n⏰UTC +5:00(Pakistan)🇵🇰\n\n➡️ 1 STEP MTG\n⏱️ 1M\n\n`;
 
-            // --- PRIVATE BACKEND INDICATORS INTERPRETATION ---
             let lastPrice = liveTicksArray[liveTicksArray.length - 1];
             let prevPrice = liveTicksArray[liveTicksArray.length - 2];
             let priceDiff = lastPrice - prevPrice;
 
-            // Trend Weight Logic Calculation
             let accumulatedTrend = 0;
             for(let j = 1; j < liveTicksArray.length; j++) {
                 accumulatedTrend += (liveTicksArray[j] - liveTicksArray[j-1]);
             }
             
-            // ADX Filter Variable Weights
             let privateAdx = Math.floor(20 + Math.abs(priceDiff * 7000));
 
             for(let i = 0; i < targetCount; i++) {
@@ -411,20 +483,16 @@
                 let hrDisplay = String(startHour).padStart(2, '0');
                 let mnDisplay = String(startMins).padStart(2, '0');
                 
-                // Pure Math calculation mixing dynamic private indicators data
                 let coreStrategyBias = accumulatedTrend + (Math.random() - 0.5) * 0.0002;
                 if(privateAdx > 25) { coreStrategyBias += (priceDiff * 0.5); }
                 
                 let direction = coreStrategyBias >= 0 ? "CALL" : "PUT";
 
-                // Multi-oscillator alternate line crossover simulation mechanics
                 if(i % 3 === 0 && Math.random() > 0.55) {
                     direction = (direction === "CALL") ? "PUT" : "CALL";
                 }
 
                 signalsText += `${hrDisplay}:${mnDisplay} ${cleanPairName} ➪ ${direction}\n`;
-                
-                // Custom random timeline gaps injection (3 to 7 mins)
                 let randomGap = Math.floor(Math.random() * (7 - 3 + 1)) + 3;
                 startMins += randomGap; 
             }
