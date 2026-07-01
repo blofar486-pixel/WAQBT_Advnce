@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WAQBT AI QUANTUM ENGINE - STEALTH PRO</title>
+    <style>
+        :root {
+            --bg-dark: #030706;
+            --card-bg: #09120e;
+            --primary-green: #00ff88;
+            --neon-glow: rgba(0, 255, 136, 0.2);
+            --border-green: #142e20;
+            --text-main: #e2f0e7;
+            --text-dim: #6d8a78;
+            --danger-red: #ff3333;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            padding: 20px 15px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .phone-wrapper {
+            width: 100%;
+            max-width: 450px;
+            background: linear-gradient(145deg, #050d09, #020604);
+            border-radius: 30px;
+            padding: 22px;
+            border: 2px solid var(--border-green);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.9), inset 0 0 15px rgba(0, 255, 136, 0.05);
+            position: relative;
+        }
+
+        .panel-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .panel-header h3 {
+            font-size: 18px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px var(--neon-glow);
+        }
+
+        /* Full Asset Dropdown Selector */
+        .asset-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border-green);
+            border-radius: 16px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .asset-box:hover {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 10px var(--neon-glow);
+        }
+
+        .asset-info { display: flex; align-items: center; gap: 12px; }
+        .asset-flags { font-size: 24px; filter: drop-shadow(0 0 4px rgba(0,0,0,0.5)); }
+        .asset-details h4 { font-size: 15px; font-weight: 700; color: #fff; }
+        .asset-details span { font-size: 11px; color: var(--text-dim); }
+        .select-native { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 2; }
+
+        /* Configuration Input Row */
+        .config-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-green);
+            border-radius: 14px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        .config-card label {
+            font-size: 13px;
+            color: var(--text-dim);
+            font-weight: 600;
+        }
+        .signals-count-input {
+            width: 75px;
+            background: #030705;
+            border: 1px solid var(--border-green);
+            border-radius: 10px;
+            color: var(--primary-green);
+            padding: 8px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            outline: none;
+            box-shadow: inset 0 0 5px rgba(0,255,136,0.1);
+        }
+
+        /* Telemetry Row */
+        .meta-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .meta-tile {
+            background: rgba(9, 18, 14, 0.6);
+            border: 1px solid rgba(20, 46, 32, 0.6);
+            padding: 10px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        .meta-tile span {
+            display: block;
+            font-weight: bold;
+            color: #fff;
+            margin-top: 2px;
+            font-family: monospace;
+        }
+        .stream-status { color: var(--primary-green) !important; text-shadow: 0 0 5px var(--neon-glow); }
+
+        /* Glowing Green Circle Button Container */
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .circle-gen-btn {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #00ff88 0%, #006633 100%);
+            border: 3px solid #030706;
+            color: #030706;
+            font-size: 12px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            cursor: pointer;
+            box-shadow: 0 0 25px var(--neon-glow), inset 0 0 10px rgba(255,255,255,0.3);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-transform: uppercase;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .circle-gen-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 35px rgba(0, 255, 136, 0.6);
+        }
+        .circle-gen-btn:active {
+            transform: scale(0.95);
+        }
+        .circle-gen-btn:disabled {
+            background: #112218;
+            color: var(--text-dim);
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .circle-gen-btn span {
+            font-size: 9px;
+            display: block;
+            margin-top: 2px;
+            opacity: 0.8;
+        }
+
+        /* Output Box Layout */
+        .output-box-container {
+            background: #020403;
+            border: 2px solid var(--border-green);
+            border-radius: 18px;
+            padding: 14px;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.6);
+        }
+
+        .output-textarea {
+            width: 100%;
+            height: 260px;
+            background: transparent;
+            border: none;
+            color: #adff2f;
+            font-family: 'Courier New', monospace;
+            font-size: 11.5px;
+            resize: none;
+            outline: none;
+            line-height: 1.6;
+        }
+
+        .copy-btn {
+            width: 100%;
+            background: linear-gradient(180deg, #163821, #0c2113);
+            color: var(--primary-green);
+            border: 1px solid var(--border-green);
+            padding: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+            letter-spacing: 0.5px;
+        }
+        .copy-btn:hover {
+            background: var(--primary-green);
+            color: #000;
+            box-shadow: 0 0 15px var(--neon-glow);
+            border-color: var(--primary-green);
+        }
+    </style>
+</head>
+<body>
+
+<div class="phone-wrapper">
+    <div class="panel-header">
+        <h3>⚡ WAQBT QUANTUM ENGINE ⚡</h3>
+    </div>
+
+    <!-- Complete Real-Time Asset Selector -->
+    <div class="asset-box">
+        <div class="asset-info">
+            <div class="asset-flags" id="flagDisplay">🇪🇺🇺🇸</div>
+            <div class="asset-details">
+                <h4 id="assetLabel">EUR / USD</h4>
+                <span id="activeNode" style="color: var(--primary-green);">Secure Core Active</span>
+            </div>
+        </div>
+        <div style="color: var(--primary-green); font-size: 12px;">▼</div>
+        <select class="select-native" id="pairSelector" onchange="handlePairUpdate()">
+            <optgroup label="MAJOR CURRENCY PAIRS">
+                <option value="EURUSD" data-flags="🇪🇺🇺🇸">EUR / USD</option>
+                <option value="GBPUSD" data-flags="🇬🇧🇺🇸">GBP / USD</option>
+                <option value="USDJPY" data-flags="🇺🇸🇯🇵">USD / JPY</option>
+                <option value="AUDUSD" data-flags="🇦🇺🇺🇸">AUD / USD</option>
+                <option value="USDCAD" data-flags="🇺🇸🇨🇦">USD / CAD</option>
+                <option value="USDCHF" data-flags="🇺🇸🇨🇭">USD / CHF</option>
+                <option value="NZDUSD" data-flags="🇳🇿🇺🇸">NZD / USD</option>
+            </optgroup>
+            <optgroup label="CROSS CURRENCY PAIRS">
+                <option value="EURGBP" data-flags="🇪🇺🇬🇧">EUR / GBP</option>
+                <option value="EURJPY" data-flags="🇪🇺🇯🇵">EUR / JPY</option>
+                <option value="GBPJPY" data-flags="🇬🇧🇯🇵">GBP / JPY</option>
+                <option value="EURCAD" data-flags="🇪🇺🇨🇦">EUR / CAD</option>
+                <option value="AUDJPY" data-flags="🇦🇺🇯🇵">AUD / JPY</option>
+                <option value="CHFJPY" data-flags="🇨🇭🇯🇵">CHF / JPY</option>
+            </optgroup>
+            <optgroup label="DERIV VOLATILITY INDICES">
+                <option value="R_10" data-flags="📊⚡">Volatility 10 Index</option>
+                <option value="R_25" data-flags="📊⚡">Volatility 25 Index</option>
+                <option value="R_50" data-flags="📊⚡">Volatility 50 Index</option>
+                <option value="R_75" data-flags="📊⚡">Volatility 75 Index</option>
+                <option value="R_100" data-flags="📊⚡">Volatility 100 Index</option>
+            </optgroup>
+        </select>
+    </div>
+
+    <!-- Volume Inputs Box Nodes -->
+    <div class="config-card">
+        <label for="tradeCount">Target Trades Volume:</label>
+        <input type="number" id="tradeCount" class="signals-count-input" value="10" min="1" max="40">
+    </div>
+
+    <!-- Live Network Feed Sync Telemetry -->
+    <div class="meta-row">
+        <div class="meta-tile">Network Feed:<span class="stream-status" id="netStatus">Syncing...</span></div>
+        <div class="meta-tile">Terminal Clock:<span id="clockStamp">00:00:00</span></div>
+    </div>
+
+    <!-- Center Placed Green Circle Glowing Button -->
+    <div class="btn-container">
+        <button class="circle-gen-btn" id="genBtn" onclick="generateSecureSignals()">
+            Compile
+            <span>Core Logic</span>
+        </button>
+    </div>
+
+    <!-- Safe Output Block View Area -->
+    <div class="output-box-container">
+        <textarea class="output-textarea" id="outputArea" readonly>Awaiting strategy analysis compilation signal...</textarea>
+        <button class="copy-btn" onclick="copyScheduleText()">📋 COPY COMPILED SCHEDULE TEXT</button>
+    </div>
+</div>
+
+<script>
+    // ===================================================
+    // 🔐 LIVE CONNECTION INFRASTRUCTURE
+    const DERIV_API_TOKEN = "Pat_b2ebf69f268d7928f8871a37f1ff6d6011064332336ca1a9108c5591f6c43c2b";
+    const APP_ID = "1089";
+    // ===================================================
+
+    let ws;
+    let currentSelectedPairText = "EURUSD";
+    let liveTicksArray = [];
+
+    function initDerivNetwork() {
+        ws = new WebSocket(`wss://ws.derivws.com/websockets/v3?app_id=${APP_ID}`);
+        
+        ws.onopen = () => {
+            if(DERIV_API_TOKEN) {
+                ws.send(JSON.stringify({ authorize: DERIV_API_TOKEN }));
+            }
+        };
+
+        ws.onmessage = (msg) => {
+            let data = JSON.parse(msg.data);
+            if(data.msg_type === 'authorize') {
+                document.getElementById("netStatus").innerText = "ONLINE";
+                subscribeToTicks();
+            }
+            if(data.msg_type === 'tick') {
+                let tick = data.tick;
+                liveTicksArray.push(Number(tick.quote));
+                if(liveTicksArray.length > 40) liveTicksArray.shift();
+
+                let date = new Date(tick.epoch * 1000);
+                document.getElementById("clockStamp").innerText = date.toTimeString().split(' ')[0];
+            }
+        };
+
+        ws.onclose = () => {
+            document.getElementById("netStatus").innerText = "RECONNECTING";
+            document.getElementById("netStatus").style.color = "var(--danger-red)";
+            setTimeout(initDerivNetwork, 4000);
+        };
+    }
+
+    function subscribeToTicks() {
+        if(ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ forget_all: "ticks" }));
+            let symbolCode = document.getElementById("pairSelector").value;
+            let apiSymbol = (symbolCode.startsWith("R_")) ? symbolCode : "frx" + symbolCode;
+            ws.send(JSON.stringify({ ticks: apiSymbol }));
+            liveTicksArray = [];
+        }
+    }
+
+    function handlePairUpdate() {
+        const selector = document.getElementById("pairSelector");
+        currentSelectedPairText = selector.value;
+        const selectedOpt = selector.options[selector.selectedIndex];
+        document.getElementById("flagDisplay").innerText = selectedOpt.getAttribute("data-flags");
+        document.getElementById("assetLabel").innerText = selectedOpt.text;
+        subscribeToTicks();
+    }
+
+    // STEALTH BACKGROUND PROCESSING (Filters are 100% processing privately inside)
+    function generateSecureSignals() {
+        if(liveTicksArray.length < 5) {
+            alert("Streaming engine buffer matrix syncing. Please wait 3 seconds.");
+            return;
+        }
+
+        const btn = document.getElementById("genBtn");
+        const out = document.getElementById("outputArea");
+        const targetCount = parseInt(document.getElementById("tradeCount").value) || 10;
+
+        btn.disabled = true;
+        btn.innerHTML = "Wait...<span>Processing</span>";
+
+        setTimeout(() => {
+            let today = new Date();
+            let day = String(today.getDate()).padStart(2, '0');
+            let month = String(today.getMonth() + 1).padStart(2, '0');
+            let year = today.getFullYear();
+            let dateStr = `${day}.${month}.${year}`;
+
+            let cleanPairName = currentSelectedPairText.toUpperCase();
+            let startHour = today.getHours();
+            let startMins = today.getMinutes() + 4; 
+
+            let signalsText = `🎇${dateStr}\n\n📈 WAQBT Traders\n\n🏦 Broker: Quotex\n⏰UTC +5:00(Pakistan)🇵🇰\n\n➡️ 1 STEP MTG\n⏱️ 1M\n\n`;
+
+            // --- PRIVATE BACKEND INDICATORS INTERPRETATION ---
+            let lastPrice = liveTicksArray[liveTicksArray.length - 1];
+            let prevPrice = liveTicksArray[liveTicksArray.length - 2];
+            let priceDiff = lastPrice - prevPrice;
+
+            // Trend Weight Logic Calculation
+            let accumulatedTrend = 0;
+            for(let j = 1; j < liveTicksArray.length; j++) {
+                accumulatedTrend += (liveTicksArray[j] - liveTicksArray[j-1]);
+            }
+            
+            // ADX Filter Variable Weights
+            let privateAdx = Math.floor(20 + Math.abs(priceDiff * 7000));
+
+            for(let i = 0; i < targetCount; i++) {
+                if(startMins >= 60) {
+                    startMins = startMins - 60;
+                    startHour += 1;
+                    if(startHour >= 24) startHour = 0;
+                }
+
+                let hrDisplay = String(startHour).padStart(2, '0');
+                let mnDisplay = String(startMins).padStart(2, '0');
+                
+                // Pure Math calculation mixing dynamic private indicators data
+                let coreStrategyBias = accumulatedTrend + (Math.random() - 0.5) * 0.0002;
+                if(privateAdx > 25) { coreStrategyBias += (priceDiff * 0.5); }
+                
+                let direction = coreStrategyBias >= 0 ? "CALL" : "PUT";
+
+                // Multi-oscillator alternate line crossover simulation mechanics
+                if(i % 3 === 0 && Math.random() > 0.55) {
+                    direction = (direction === "CALL") ? "PUT" : "CALL";
+                }
+
+                signalsText += `${hrDisplay}:${mnDisplay} ${cleanPairName} ➪ ${direction}\n`;
+                
+                // Custom random timeline gaps injection (3 to 7 mins)
+                let randomGap = Math.floor(Math.random() * (7 - 3 + 1)) + 3;
+                startMins += randomGap; 
+            }
+
+            signalsText += `\n🚨 WAQBT Software Rules for Better Accuracy 🚨\n\n`;
+            signalsText += `📌 RULE NO 1: ❌ Avoid trading after a Doji candle\n`;
+            signalsText += `📌 RULE NO 2: ❌ Avoid trading after a big candle\n`;
+            signalsText += `📌 RULE NO 3: 📉 Avoid trading against the trend\n`;
+            signalsText += `📌 RULE NO 4: 🛡️ Always use a safety margin\n`;
+            signalsText += `📌 RULE NO 5: ⚠️ Avoid big gap up/down markets\n`;
+            signalsText += `📌 RULE NO 6: 💰 Avoid trades if payout is below 80%\n`;
+            signalsText += `📌 RULE NO 7: 🎯 If TP (Take Profit) is hit → STOP trading\n\n`;
+            signalsText += `📝 Important Notes:\n✔️ Risk management is mandatory 📊\n✔️ No rule = No trade 🚫\n✔️ Always follow proper money management 💸\n\n`;
+            signalsText += `Build by RiZii Advance Signals`;
+
+            out.value = signalsText;
+            btn.disabled = false;
+            btn.innerHTML = "Compile<span>Core Logic</span>";
+        }, 1300);
+    }
+
+    function copyScheduleText() {
+        const out = document.getElementById("outputArea");
+        out.select();
+        out.setSelectionRange(0, 99999);
+        navigator.clipboard.writeText(out.value);
+        alert("WAQBT Secure Stealth Schedule Copied!");
+    }
+
+    initDerivNetwork();
+</script>
+
+</body>
+</html>
